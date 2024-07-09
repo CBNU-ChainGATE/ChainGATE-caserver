@@ -1,6 +1,15 @@
 # CA-server
 ca server
 
+# Setting
+
+# How to start the CA server
+
+```
+$ cd ChainGATE-caserver/
+$ python3 app.py
+```
+
 # CA Server API GUIDE
 ### 1. /api/v1/cert/request [POST]
   { 'csr': csr }
