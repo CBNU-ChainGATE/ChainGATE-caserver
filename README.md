@@ -10,11 +10,11 @@ ca server
 $ sudo yum update -y
 $ sudo yum install -y python3 python3-pip openssl
 $ pip3 install Flask pyOpenSSL
-~~$ sudo yum install -y python3-devel~~
 
 ### 방화벽 설정
-$ firewall -cmd --zone=public --add-port=22/tcp --permanent
-$ sudo firewall-cmd --permanent --zone=public --add-port=1440/tcp
+$ sudo systemctl start firewalld
+$ sudo systemctl enable firewalld
+$ sudo firewall-cmd --zone=public --add-port=1441/tcp --permanent
 
 ### openssl 설치 및 개인키, 인증서, CRL 발급
 $ sudo yum install openssh-server
@@ -40,7 +40,7 @@ CA_KEY_PATH = 'certs/ca_key.pem'
 CA_KEY_PASSWORD = '인증서 비밀번호'
 CRL_PATH = 'certs/crl.pem'
 CERTS_DIR = 'certs/'
-PORT = 1440          # 위에서 방화벽 설정한 포트
+PORT = 1441          # 위에서 방화벽 설정한 포트
 ```
 
 # How to start the CA server
