@@ -10,7 +10,7 @@ ca server
 $ sudo yum update -y
 $ sudo yum install -y python3 python3-pip openssl
 $ pip3 install Flask pyOpenSSL
-$ sudo yum install -y python3-devel
+~~$ sudo yum install -y python3-devel~~
 
 ### 방화벽 설정
 $ firewall -cmd --zone=public --add-port=22/tcp --permanent
