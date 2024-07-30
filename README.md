@@ -1,5 +1,5 @@
 # CA-server
-ca server
+CA server
 
 # Setting
 
