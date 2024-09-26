@@ -5,8 +5,12 @@ from config import CA_CERT_PATH, CA_KEY_PATH, CA_KEY_PASSWORD, CRL_PATH, CERTS_D
 import time
 from datetime import datetime
 import hashlib
+from prometheus_flask_exporter import PrometheusMetrics
+#import logging
 
+#logging.basicConfig(filename = "logs/ca.log", level = logging.DEBUG)
 app = Flask(__name__)
+metrics = PrometheusMetrics(app)
 
 def load_ca_cert_and_key():
     with open(CA_CERT_PATH, 'r') as f:
