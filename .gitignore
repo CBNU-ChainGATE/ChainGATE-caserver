@@ -1,2 +1,4 @@
 certs/
 config.py
+logs/
+__pycache__/
