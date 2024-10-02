@@ -7,6 +7,7 @@ from datetime import datetime
 import hashlib
 import logging
 import requests
+import random
 
 app = Flask(__name__)
 logging.basicConfig(filename="logs/server.log", filemode="w", level=logging.INFO)
@@ -170,8 +171,7 @@ def verify_cert():
 
 @app.route('/api/blockchain/new', methods=['POST'])
 def post_new_transaction():
-    """I."""
-    logging.info("* New transaction request *")
+    logging.info("=== New transaction request ===")
     data = request.get_json()
     endpoint = {
         'node1': '192.168.0.29:1444/transaction/new',
@@ -179,12 +179,47 @@ def post_new_transaction():
         'node3': '192.168.0.45:1444/transaction/new',
         'node4': '192.168.0.48:1444/transaction/new'
     }
-    logging.info('Send Request to every nodes...')
     for node in ["node1", "node2", "node3", "node4"]:
+        logging.info(f'Send Request to {node} ...')
         response = requests.post(
             f"http://{endpoint[node]}", json=data)
-    logging.info("complete to send request")
+    logging.info("=== complete to send request ===")
     return jsonify({'message': 'Send Request to node...'}), 201
+
+
+@app.route('/api/blockchain/search', methods=['POST'])
+def post_data_searching():
+    logging.info("=== Data searching request ===")
+    data = request.get_json()
+    endpoint = {
+        'node1': '192.168.0.29:1444/chain/search',
+        'node2': '192.168.0.28:1444/chain/search',
+        'node3': '192.168.0.45:1444/chain/search',
+        'node4': '192.168.0.48:1444/chain/search'
+    }
+
+    results, nodes = [], []
+    random_endpoint = random.sample(list(endpoint.items()), 2)
+    nodes.append(random_endpoint[0][0])
+    nodes.append(random_endpoint[1][0])
+    for node in nodes:
+        logging.info(f'Send Request to {node} ...')
+        response = requests.post(
+            f"http://{endpoint[node]}", json=data)
+        if response.status_code == 200:
+            json_data = response.json()
+            results.append(json_data)
+        else:
+            logging.error(f"Failed to get data. Status code: {response.status_code}")
+            return jsonify({'error': 'Failed to get data!'}), response.status_code
+
+    if len(results) == 2 and results[0] == results[1]:
+        logging.info("Found a block that meets the conditions.")
+        logging.info("=== complete the searching request ===")
+        return jsonify({'results': results}), 200
+    else:
+        logging.error("Chains between nodes do not match!")
+        return jsonify({"error": "Chain inconsistency detected among nodes."}), 409
 
 
 if __name__ == '__main__':
