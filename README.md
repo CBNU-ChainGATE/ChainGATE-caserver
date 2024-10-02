@@ -77,3 +77,45 @@ $ python3 app.py
 400: 등록되지 않은 혹은 파기된 인증서인 경우
 
 500: 서버 에러
+
+
+### 3. /api/blockchain/new [POST]
+
+    {
+        "date": "2024-04-12",
+        "time": "10:30:00",
+        "name": "홍길동",
+        "position": "팀원",
+        "department": "개발부"
+    }
+
+|     Key      |    Value    |        Type         |
+| :----------: | :---------: | :-----------------: |
+|    "date"    |  출입날짜   | String [YYYY-MM-DD] |
+|    "time"    |  출입시간   |  String [HH:MM:SS]  |
+|    "name"    | 출입자 이름 |       String        |
+|  "position"  | 출입자 직급 |       String        |
+| "department" | 출입자 소속 |       String        |
+
+
+### 4. /api/blockchain/search [POST]
+
+    {
+        "date": "2024-04-12",
+        "name": "",
+        "department": "개발부"
+    }
+
+|     Key      |    Value    |           Type            |
+| :----------: | :---------: | :-----------------------: |
+|    "date"    |  출입날짜   | String [YYYY-MM-DD] OR "" |
+|    "name"    | 출입자 이름 |       String OR ""        |
+| "department" | 출입자 소속 |       String OR ""        |
+
+**❗ 데이터가 없을 경우, _Value=""_ (최소 1개 이상의 데이터는 있어야 됨).**
+
+**response**
+
+200: 인증 성공
+
+409: 블록체인 노드 간의 블록이 일치하지 않을 경우
