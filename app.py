@@ -5,11 +5,10 @@ from config import CA_CERT_PATH, CA_KEY_PATH, CA_KEY_PASSWORD, CRL_PATH, CERTS_D
 import time
 from datetime import datetime
 import hashlib
-from prometheus_flask_exporter import PrometheusMetrics
 import logging
+import requests
 
 app = Flask(__name__)
-metrics = PrometheusMetrics(app)
 logging.basicConfig(filename="logs/server.log", filemode="w", level=logging.INFO)
 
 def load_ca_cert_and_key():
@@ -167,6 +166,25 @@ def verify_cert():
         return jsonify({'status': 'error', 'message': str(e)}), 500
     finally:
         logging.info("=== 인증서 검증 종료 ===")
+
+
+@app.route('/api/blockchain/new', methods=['POST'])
+def post_new_transaction():
+    """I."""
+    logging.info("* New transaction request *")
+    data = request.get_json()
+    endpoint = {
+        'node1': '192.168.0.29:1444/transaction/new',
+        'node2': '192.168.0.28:1444/transaction/new',
+        'node3': '192.168.0.45:1444/transaction/new',
+        'node4': '192.168.0.48:1444/transaction/new'
+    }
+    logging.info('Send Request to every nodes...')
+    for node in ["node1", "node2", "node3", "node4"]:
+        response = requests.post(
+            f"http://{endpoint[node]}", json=data)
+    logging.info("complete to send request")
+    return jsonify({'message': 'Send Request to node...'}), 201
 
 
 if __name__ == '__main__':
