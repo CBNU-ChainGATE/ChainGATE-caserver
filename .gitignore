@@ -1,7 +1,4 @@
 certs/
 config.py
 logs/
-ca/
-blockchain/
-templates/
 __pycache__/
