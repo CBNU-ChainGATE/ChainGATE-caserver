@@ -2,8 +2,6 @@ import time
 import requests
 import logging
 import os
-import threading
-import queue
 from flask import Flask, request, jsonify
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
@@ -12,28 +10,6 @@ from blockchain.blockchain_utils import send_transaction_to_nodes, search_data_a
 from config import CERTS_DIR, PORT, LOG_UPLOAD_URL
 
 app = Flask(__name__)
-
-# 로그 전송을 위한 큐
-log_queue = queue.Queue()
-
-# 로그 전송 스레드 정의
-def process_log_queue():
-    while True:
-        log_entry, server_url, log_file_name = log_queue.get()
-        try:
-            response = requests.post(server_url, json={
-                'log': log_entry,
-                'file_name': log_file_name
-            })
-            if response.status_code != 200:
-                print(f"Failed to send log entry. Status code: {response.status_code}")
-        except Exception as e:
-            print(f"Error while sending log entry: {e}")
-        finally:
-            log_queue.task_done()
-
-# 로그 전송 스레드 시작
-threading.Thread(target=process_log_queue, daemon=True).start()
 
 # 커스텀 핸들러 정의
 class LogServerHandler(logging.Handler):
@@ -44,8 +20,16 @@ class LogServerHandler(logging.Handler):
 
     def emit(self, record):
         log_entry = self.format(record)
-        # 로그 메시지를 큐에 추가
-        log_queue.put((log_entry, self.server_url, self.log_file_name))
+        try:
+            # 로그 메시지와 로그 파일 이름을 함께 전송
+            response = requests.post(self.server_url, json={
+                'log': log_entry,
+                'file_name': self.log_file_name
+            })
+            if response.status_code != 200:
+                print(f"Failed to send log entry. Status code: {response.status_code}")
+        except Exception as e:
+            print(f"Error while sending log entry: {e}")
 
 # 로그 설정
 log_file_path = "logs/caserver.log"  # 모니터링할 로그 파일 경로
