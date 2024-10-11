@@ -63,7 +63,7 @@ def issue_cert():
     csr_pem = request.json.get('csr')
     cert_pem = create_certificate(csr_pem)
     logger.info("=== 인증서 발급 프로세스 완료 ===")
-    return jsonify({'certificate': cert_pem})
+    return jsonify({'certificate': cert_pem}), 201
 
 @app.route('/api/v1/cert/verify', methods=['POST'])
 def verify_cert():
@@ -71,7 +71,7 @@ def verify_cert():
     cert_pem = request.json.get('cert')
     result = verify_certificate(cert_pem)
     logger.info("=== 인증서 검증 종료 ===")
-    return jsonify(result)
+    return jsonify(result), 200
 
 @app.route('/api/blockchain/new', methods=['POST'])
 def post_new_transaction():
@@ -83,7 +83,7 @@ def post_new_transaction():
 def post_data_searching():
     data = request.get_json()
     result = search_data_across_nodes(data)
-    return jsonify(result)
+    return jsonify(result), 200
 
 if __name__ == '__main__':
     # 서버 실행
