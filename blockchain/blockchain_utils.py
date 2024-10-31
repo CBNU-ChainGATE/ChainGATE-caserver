@@ -34,7 +34,7 @@ def search_data_across_nodes(data):
         if response.status_code == 200:
             results.append(response.json())
         else:
-            logging.error(f"Failed to get data from {node}.")
+            logging.info(f"Failed to get data from {node}.")
             return {'error': 'Failed to get data!'}
 
     if len(results) == 2 and results[0] == results[1]:

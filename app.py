@@ -16,7 +16,6 @@ app = Flask(__name__)
 # 로그 전송을 위한 큐
 log_queue = queue.Queue()
 
-# 로그 전송 스레드 정의
 def process_log_queue():
     while True:
         log_entry, server_url, log_file_name = log_queue.get()
@@ -49,28 +48,30 @@ class LogServerHandler(logging.Handler):
 
 # 로그 설정
 log_file_path = "logs/caserver.log"  # 모니터링할 로그 파일 경로
+formatter = logging.Formatter('[%(levelname)s] %(message)s')
 logging.basicConfig(filename=log_file_path, filemode="w", level=logging.INFO)
 logger = logging.getLogger()
 
 # 로그 서버로 로그를 보내는 핸들러 추가 (파일 이름 포함)
 log_server_handler = LogServerHandler(LOG_UPLOAD_URL, "caserver.log")
 log_server_handler.setLevel(logging.INFO)
+log_server_handler.setFormatter(formatter)
 logger.addHandler(log_server_handler)
 
 @app.route('/api/v1/cert/request', methods=['POST'])
 def issue_cert():
-    logger.info("=== 인증서 발급 프로세스 시작 ===")
+    logger.info("=== Certificate issuance process started ===")
     csr_pem = request.json.get('csr')
     cert_pem = create_certificate(csr_pem)
-    logger.info("=== 인증서 발급 프로세스 완료 ===")
+    logger.info("=== Certificate issuance process completed ===")
     return jsonify({'certificate': cert_pem}), 201
 
 @app.route('/api/v1/cert/verify', methods=['POST'])
 def verify_cert():
-    logger.info("=== 인증서 검증 시작 ===")
+    logger.info("=== Certificate verification started ===")
     cert_pem = request.json.get('cert')
     result = verify_certificate(cert_pem)
-    logger.info("=== 인증서 검증 종료 ===")
+    logger.info("=== Certificate verification completed ===")
     return jsonify(result), 200
 
 @app.route('/api/blockchain/new', methods=['POST'])
