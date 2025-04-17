@@ -1,7 +1,10 @@
-# CA-server
-CA server
+# ChainGATE-caserver
 
-# Setting
+## Description
+
+허가형 블록체인에서 노드에 대한 검증과 인증서를 부여해주는 CA 서버
+
+## Setting
 
 ### 1. 필요 프로그램 설치 및 설정
 
